@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ.get("OPENAI_KEY"))
 import os
 import pyfiglet
 from termcolor import colored
@@ -11,21 +13,18 @@ def print_banner(text, font="slant", color="cyan"):
     colored_ascii = colored(ascii_art, color)
     print(colored_ascii)
 
-openai.api_key = os.environ.get("OPENAI_KEY")
 
 def chat(prompt, state):
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4-turbo-2024-04-09",
-            messages=[
-                {"role": "system", "content": """ You are interfacing with a bash terminal to accomplish the following user input: {prompt} 
+        response = client.chat.completions.create(model="gpt-4-turbo-2024-04-09",
+        messages=[
+            {"role": "system", "content": """ You are interfacing with a bash terminal to accomplish the following user input: {prompt} 
                                                 Without any additional commentary or context, please provide ONE of the following options:
                                                 1. A Bash sequence that will accomplish the user input.
                                                 2. 0xDEAD to indicate that there is nothing more to be done."""},
-                {"role": "user", "content": "Here is the current bash state. If it is empty, then you are at the beginning of the bash terminal session.\n{state}"},
-            ]
-        )
-        return response.choices[0].message['content'].strip()
+            {"role": "user", "content": "Here is the current bash state. If it is empty, then you are at the beginning of the bash terminal session.\n{state}"},
+        ])
+        return response.choices[0].message.content.strip()
     except Exception as e:
         return f"An error occurred: {str(e)}"
 
