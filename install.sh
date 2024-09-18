@@ -53,7 +53,7 @@ fi
 
 if [ -n "$SHELL_RC" ]; then
     echo "Adding alias to $SHELL_RC..."
-    echo "alias cyprus='sudo OPENAI_API_KEY=$OPENAI_API_KEY ./run.py'" >> "$SHELL_RC"
+    echo "alias cyprus='sudo -E ./run.py'" >> "$SHELL_RC"
     echo "source $SHELL_RC" >> "$SHELL_RC"
 else
     echo "Warning: Could not find .bashrc or .zshrc to add alias."
