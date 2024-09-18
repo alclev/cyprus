@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Project name and version
-project(Cyprus)
+project(Cyprus VERSION 1.0)
 
 # Set the C++ standard to C++17
 set(CMAKE_CXX_STANDARD 17)

@@ -19,8 +19,8 @@ if ! apt install -y cmake g++ libcurl4-openssl-dev nlohmann-json3-dev; then
 fi
 
 # Create build directory if it doesn't exist
-mkdir -p build
-cd build
+rm -rf build
+mkdir build
 
 # Run CMake and check if it succeeds
 if ! cmake ..; then
