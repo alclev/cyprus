@@ -9,6 +9,8 @@
 #include <cctype>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
+#include <vector>
+#include <sstream>
 #include "banner.h"
 
 using json = nlohmann::json;
@@ -26,7 +28,18 @@ int stringToBinary(const std::string& str) {
     throw std::invalid_argument("Input must be '0' or '1'");
 }
 
-std::string command_gen(const std::string& prompt, const std::string& state, int limit) {
+std::string formatVectorForPrompt(const std::vector<std::string>& vec) {
+    std::ostringstream oss;
+    oss << "[";
+    for (size_t i = 0; i < vec.size(); ++i) {
+        oss << "\"" << vec[i] << "\"";
+        if (i < vec.size() - 1) oss << ", ";
+    }
+    oss << "]";
+    return oss.str();
+}
+
+std::string command_gen(const std::string& prompt, const std::string& state, std::vector<std::string> &past_comms, int limit) {
     CURL* curl = curl_easy_init();
     std::string response;
 
@@ -51,7 +64,8 @@ std::string command_gen(const std::string& prompt, const std::string& state, int
                                                 "the original PROMPT. Continue providing executable bash commands until you feel that the original PROMPT "
                                                 "has been completed. BE INTERACTIVE and seek additional information with more commands, if needed."}},
                 {{"role", "user"}, {"content", "The current Bash session state is: " + state}},
-                {{"role", "user"}, {"content", "The original PROMPT is: " + prompt}}
+                {{"role", "user"}, {"content", "The original PROMPT is: " + prompt}},
+                {{"role", "user"}, {"content", "The past commands are: " + formatVectorForPrompt(past_comms)}}
             })}
         };
 
@@ -175,9 +189,11 @@ int main() {
         state = "";
         commands = "";
         int iteration_count = 0;
+        std::vector<std::string> past_comms;
         while (true){
             try {
-                commands = command_gen(user_input, state, 10);
+                commands = command_gen(user_input, state, past_comms, 10);
+                past_comms.push_back(commands);
                 std::cout << "Executing command: " << commands << std::endl;
                 state = execute_command(commands);
                 if(!check_termination(user_input, state, iteration_count)){
