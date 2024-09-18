@@ -171,6 +171,12 @@ int main() {
     Banner banner;
     banner.displayRandomBanner();
     std::cout << "Welcome to Cyprus! Type 'q' or 'quit' to exit." << std::endl;
+    /* Check if user is root */
+    if (geteuid() == 0) {
+        std::cout << "Warning: You are running as root which may be dangerous. Please exercise caution." << std::endl;
+    }else{
+        std::cout << "You are not running as root (recommended)." << std::endl;
+    }
 
     std::string user_input, state, commands;
 
