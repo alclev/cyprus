@@ -7,24 +7,30 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Function to check if a command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
+check_and_install() {
+    local tool=$1
+    local package=${2:-$tool}  # Use the second argument as package name if provided, otherwise use the tool name
+
+    if ! command_exists "$tool"; then
+        echo "$tool is required but not installed."
+        apt install "$package" -y
+    else
+        echo "$tool is already installed."
+    fi
 }
+
 
 # Main installation function
 install_cyprus() {
     # Check and prompt for installation of dependencies
     echo "Checking dependencies..."
 
-    if ! command_exists cmake; then
-        echo "CMake is required but not installed."
-        apt install cmake -y
-    fi
+    echo "Checking and installing dependencies..."
+    check_and_install cmake
+    check_and_install curl
+    check_and_install "g++" build-essential
 
-    if ! command_exists curl; then
-        echo "curl is required but not installed."
-        apt install curl -y
-    fi
+    build-essential cmake libcurl4-openssl-dev nlohmann-json3-dev
 
     # nlohmann_json is a header-only library, so we'll download it directly
     if [ ! -f "/usr/local/include/nlohmann/json.hpp" ]; then
