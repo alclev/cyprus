@@ -1,61 +1,55 @@
+#!/bin/bash
 
-set -e  # Exit immediately if a command exits with a non-zero status.
+check_installed() {
+    if ! command -v "$1" &> /dev/null; then
+        echo "Error: $1 is not installed."
+        exit 1
+    fi
+}
 
-# Check if python3-venv is installed
-if ! dpkg -s python3-venv >/dev/null 2>&1; then
-    echo "python3-venv is not installed. Installing now..."
-    sudo apt-get update
-    sudo apt-get install -y python3-venv
-else
-    echo "python3-venv is already installed."
-fi
+check_openai_key_alias() {
+    if [[ "$SHELL" == *"bash"* ]]; then
+        RC_FILE="$HOME/.bashrc"
+    elif [[ "$SHELL" == *"zsh"* ]]; then
+        RC_FILE="$HOME/.zshrc"
+    else
+        echo "Unsupported shell. Please use bash or zsh."
+        exit 1
+    fi
 
-# Check if .venv directory exists, if corrupted or missing, recreate
-if [ ! -d ".venv" ]; then
-    echo "Creating virtual environment..."
-    python3 -m venv .venv
-else
-    echo "Virtual environment already exists. Recreating to ensure it's not corrupted..."
-    rm -rf .venv
-    python3 -m venv .venv
-fi
+    if ! grep -q "OPENAI_API_KEY" "$RC_FILE"; then
+        echo "Error: OpenAI API key alias not found in shell configuration."
+        exit 1
+    fi
+}
 
-# Define paths
-VENV_PATH="$PWD/.venv"
-VENV_PYTHON="$VENV_PATH/bin/python"
-VENV_PIP="$VENV_PATH/bin/pip"
+create_cyprus_alias() {
+    if [[ "$SHELL" == *"bash"* ]]; then
+        RC_FILE="$HOME/.bashrc"
+    elif [[ "$SHELL" == *"zsh"* ]]; then
+        RC_FILE="$HOME/.zshrc"
+    else
+        echo "Unsupported shell. Please use bash or zsh."
+        exit 1
+    fi
 
-echo "Using Python: $VENV_PYTHON"
-echo "Using pip: $VENV_PIP"
+    echo "alias cyprus='sudo -E $1'" >> "$RC_FILE"
+    echo "Alias 'cyprus' created in $RC_FILE"
+    echo "Please restart your shell or run 'source $RC_FILE' to apply the changes."
+}
 
-# Check if the python executable exists in the virtual environment
-if [ ! -f "$VENV_PYTHON" ]; then
-    echo "Error: Python executable not found in the virtual environment."
-    exit 1
-fi
+main() {
+    # Check if Python, venv, and pip are installed
+    for tool in python3 venv pip; do
+        check_installed "$tool"
+    done
 
-# Upgrade pip in the virtual environment
-echo "Upgrading pip..."
-$VENV_PYTHON -m pip install --upgrade pip
+    # Check if OpenAI API key alias exists
+    check_openai_key_alias
 
-# Install requirements
-echo "Installing requirements..."
-$VENV_PIP install -r requirements.txt
-echo "Activating virtual environment..."
+    # Create cyprus alias
+    read -p "Enter the full path to your Python file: " pyfile_path
+    create_cyprus_alias "$pyfile_path"
+}
 
-# Add alias to .bashrc (or .zshrc if using zsh)
-SHELL_RC=""
-if [ -f "$HOME/.bashrc" ]; then
-    SHELL_RC="$HOME/.bashrc"
-elif [ -f "$HOME/.zshrc" ]; then
-    SHELL_RC="$HOME/.zshrc"
-fi
-
-if [ -n "$SHELL_RC" ]; then
-    echo "Adding alias to $SHELL_RC..."
-    echo "alias cyprus='sudo -E ./run.py'" >> "$SHELL_RC"
-else
-    echo "Warning: Could not find .bashrc or .zshrc to add alias."
-fi
-source $SHELL_RC
-echo "Cyprus installed successfully. Run 'cyprus' to start the program."
+main
