@@ -13,11 +13,6 @@
 
 using json = nlohmann::json;
 
-// Function to print a banner (simplified version without pyfiglet and termcolor)
-void print_banner(const std::string& text) {
-    FancyBanner::print_banner("Cyprus", "slant", "cyan");
-}
-
 // Callback function for cURL to write response data
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
     size_t total_size = size * nmemb;
@@ -92,7 +87,7 @@ std::string execute_command(const std::string& command) {
 }
 
 int main() {
-    print_banner("Cyprus");
+    FancyBanner::print_banner("Cyprus", "slant", "cyan");
     std::cout << "Welcome to Cyprus! Type 'q' or 'quit' to exit." << std::endl;
 
     std::string user_input, state, commands;
