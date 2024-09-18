@@ -1,9 +1,9 @@
 if ! dpkg -s python3-pip >/dev/null 2>&1; then
-    echo "python3-venv is not installed. Installing now..."
+    echo "python3-pip is not installed. Installing now..."
     sudo apt-get update
-    sudo apt-get install -y python3-venv
+    sudo apt-get install -y python3-pip
 else
-    echo "python3-venv is already installed."
+    echo "python3-pip is already installed."
 fi
 
 # Check if python3-venv is installed
