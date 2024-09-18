@@ -9,7 +9,7 @@
 #include <cctype>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
-#include "fancy_banner.h"
+#include "banner.h"
 
 using json = nlohmann::json;
 

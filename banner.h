@@ -1,6 +1,4 @@
-// fancy_banner.hpp
-#ifndef FANCY_BANNER_HPP
-#define FANCY_BANNER_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -61,4 +59,3 @@ const std::map<std::string, std::string> FancyBanner::colors = {
     {"white", "\033[37m"}
 };
 
-#endif // FANCY_BANNER_HPP
