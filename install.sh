@@ -41,7 +41,7 @@ install_cyprus() {
     check_and_install curl-config libcurl4-openssl-dev
 
     # Install nlohmann-json
-    check_and_install nlohmann-json3-dev nlohmann-json3-dev
+    apt install nlohmann-json3-dev -y
 
     # Create build directory
     echo "Creating build directory..."
@@ -50,7 +50,7 @@ install_cyprus() {
 
     # Run CMake
     echo "Running CMake..."
-    if ! cmake ..; then
+    if ! cmake .. -DCMAKE_CXX_STANDARD=17; then
         echo "CMake configuration failed. Exiting."
         exit 1
     fi
