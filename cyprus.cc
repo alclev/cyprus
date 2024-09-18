@@ -114,18 +114,20 @@ int main() {
 
         state = "";
         commands = "";
-
-        try {
-            commands = chat(user_input, state);
-            if (commands != "0xDEAD") {
-                std::cout << "Executing command: " << commands << std::endl;
-                state = execute_command(commands);
-                std::cout << "\n" << state;
-            } else {
-                std::cout << "Nothing more to be done." << std::endl;
+        while (true){
+            try {
+                commands = chat(user_input, state);
+                if (commands != "0xDEAD") {
+                    std::cout << "Executing command: " << commands << std::endl;
+                    state = execute_command(commands);
+                    std::cout << "\n" << state;
+                } else {
+                    std::cout << "Nothing more to be done." << std::endl;
+                    break;
+                }
+            }catch (const std::exception& e) {
+                std::cerr << "An error occurred: " << e.what() << std::endl;
             }
-        } catch (const std::exception& e) {
-            std::cerr << "An error occurred: " << e.what() << std::endl;
         }
     }
 
