@@ -37,11 +37,11 @@ std::string chat(const std::string& prompt, const std::string& state) {
         json payload = {
             {"model", "gpt-4-turbo"},
             {"messages", json::array({
-                {{"role", "system"}, {"content", "You are a Bash terminal assistant. When given a user input, 
+                {{"role", "system"}, {"content", R"You are a Bash terminal assistant. When given a user input, 
                 respond ONLY with the raw Bash commands needed to accomplish the task. Do NOT include any explanations, 
                 comments, or markdown formatting like ```bash. If no Bash command is necessary, respond with 0xDEAD and 
                 nothing else."}},
-                {{"role", "system"}, {"content", "Adapt and react to the bash session state with the appropriate commands.
+                {{"role", "system"}, {"content", R"Adapt and react to the bash session state with the appropriate commands.
                 This include reacting to any technical and environmental challenges. Continue providing 
                 bash commands until you feel that the original task has been completed, and seek out additional information
                 with more commands if needed."}},
