@@ -1,18 +1,18 @@
-if ! dpkg -s python3-pip >/dev/null 2>&1; then
-    echo "python3-pip is not installed. Installing now..."
-    sudo apt-get update
-    sudo apt-get install -y python3-pip
-else
-    echo "python3-pip is already installed."
-fi
-
-# Check if python3-venv is installed
 if ! dpkg -s python3-venv >/dev/null 2>&1; then
     echo "python3-venv is not installed. Installing now..."
     sudo apt-get update
     sudo apt-get install -y python3-venv
 else
     echo "python3-venv is already installed."
+fi
+
+# Check if python3-pip is installed
+if ! dpkg -s python3-pip >/dev/null 2>&1; then
+    echo "python3-pip is not installed. Installing now..."
+    sudo apt-get update
+    sudo apt-get install -y python3-pip
+else
+    echo "python3-pip is already installed."
 fi
 
 # Check if .venv directory exists
@@ -27,9 +27,13 @@ fi
 echo "Activating virtual environment..."
 source .venv/bin/activate
 
+# Upgrade pip in the virtual environment
+echo "Upgrading pip..."
+pip install --upgrade pip
+
 # Install requirements
 echo "Installing requirements..."
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 
 echo "alias cyprus='sudo OPENAI_API_KEY=$OPENAI_API_KEY ./run.py'" >> ~/.bashrc
 source ~/.bashrc
