@@ -42,11 +42,23 @@ public:
             std::string formatted_line;
             for (char c : text) {
                 if (c >= 'A' && c <= 'Z') {
-                    formatted_line += line.substr((c - 'A') * 6, 6);
+                    // Ensure the line has enough characters to extract 6 characters
+                    size_t pos = (c - 'A') * 6;
+                    if (pos + 6 <= line.size()) {
+                        formatted_line += line.substr(pos, 6);
+                    } else {
+                        formatted_line += "      "; // Fallback for out-of-bounds
+                    }
                 } else if (c >= 'a' && c <= 'z') {
-                    formatted_line += line.substr((c - 'a') * 6, 6);
+                    // Handle lowercase letters similarly
+                    size_t pos = (c - 'a') * 6;
+                    if (pos + 6 <= line.size()) {
+                        formatted_line += line.substr(pos, 6);
+                    } else {
+                        formatted_line += "      "; // Fallback for out-of-bounds
+                    }
                 } else {
-                    formatted_line += "      ";
+                    formatted_line += "      "; // Fallback for non-alphabet characters
                 }
             }
             result += center_text(formatted_line, terminal_width) + "\n";
@@ -58,12 +70,12 @@ public:
 
 const std::map<std::string, std::vector<std::string>> FancyBanner::fonts = {
     {"slant", {
-        "  _____  _                    _            ",
-        " / ____|| |                  | |           ",
-        "| |     | |  _   _   _ __ ___ | |  ___  ___ ",
-        "| |     | | | | | | | '_ ` _ \\| | / _ \\/ __|",
-        "| |____ | | | |_| | | | | | | | ||  __/\\__ \\",
-        " \\_____||_|  \\__,_| |_| |_| |_|_| \\___||___/"
+        "  ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____  ",
+        " / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ ",
+        "| |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | ",
+        "| |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | ",
+        "| |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | ",
+        " \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ "
     }}
 };
 
