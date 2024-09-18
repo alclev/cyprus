@@ -1,4 +1,3 @@
-#!/bin/bash
 
 set -e  # Exit immediately if a command exits with a non-zero status.
 
@@ -11,12 +10,14 @@ else
     echo "python3-venv is already installed."
 fi
 
-# Check if .venv directory exists
+# Check if .venv directory exists, if corrupted or missing, recreate
 if [ ! -d ".venv" ]; then
     echo "Creating virtual environment..."
     python3 -m venv .venv
 else
-    echo "Virtual environment already exists."
+    echo "Virtual environment already exists. Recreating to ensure it's not corrupted..."
+    rm -rf .venv
+    python3 -m venv .venv
 fi
 
 # Define paths
@@ -26,6 +27,12 @@ VENV_PIP="$VENV_PATH/bin/pip"
 
 echo "Using Python: $VENV_PYTHON"
 echo "Using pip: $VENV_PIP"
+
+# Check if the python executable exists in the virtual environment
+if [ ! -f "$VENV_PYTHON" ]; then
+    echo "Error: Python executable not found in the virtual environment."
+    exit 1
+fi
 
 # Upgrade pip in the virtual environment
 echo "Upgrading pip..."
