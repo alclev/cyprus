@@ -116,7 +116,7 @@ int main() {
             if (commands != "0xDEAD") {
                 std::cout << "Executing command: " << commands << std::endl;
                 state = execute_command(commands);
-                std::cout << "Command output: \n" << state;
+                std::cout << "\n" << state;
             } else {
                 std::cout << "Nothing more to be done." << std::endl;
             }
