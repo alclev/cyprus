@@ -19,8 +19,11 @@ add_executable(cyprus cyprus.cc)
 # Link necessary libraries to the executable
 target_link_libraries(cyprus PRIVATE CURL::libcurl nlohmann_json::nlohmann_json)
 
-# Include necessary directories for libcurl (already handled by find_package)
-target_include_directories(cyprus PRIVATE ${CURL_INCLUDE_DIRS})
+# Include necessary directories
+target_include_directories(cyprus PRIVATE 
+    ${CURL_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}  # Add this line to include the current source directory
+)
 
 # Enable useful warnings and strict compilation flags
 target_compile_options(cyprus PRIVATE

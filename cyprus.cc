@@ -9,12 +9,13 @@
 #include <cctype>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
+#include "fancy_banner.h"
 
 using json = nlohmann::json;
 
 // Function to print a banner (simplified version without pyfiglet and termcolor)
 void print_banner(const std::string& text) {
-    std::cout << "======== " << text << " ========" << std::endl;
+    FancyBanner::print_banner("Cyprus", "slant", "cyan");
 }
 
 // Callback function for cURL to write response data
