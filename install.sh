@@ -6,77 +6,27 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-# Function to check if a command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
+# Update package lists
+apt update
 
-# Function to check if a tool exists and install it if not
-check_and_install() {
-    local tool=$1
-    local package=${2:-$tool}  # Use the second argument as package name if provided, otherwise use the tool name
+# Install dependencies
+apt install -y cmake g++ libcurl4-openssl-dev nlohmann-json3-dev
 
-    if ! command_exists "$tool"; then
-        echo "$tool is required but not installed. Installing $package..."
-        apt install "$package" -y
-    else
-        echo "$tool is already installed."
-    fi
-}
+# Create build directory
+mkdir -p build
+cd build
 
-# Main installation function
-install_cyprus() {
-    # Update package lists
-    echo "Updating package lists..."
-    apt update
+# Run CMake
+cmake ..
 
-    # Check and install dependencies
-    echo "Checking and installing dependencies..."
-    check_and_install cmake
-    check_and_install curl
-    check_and_install g++ build-essential
-    check_and_install pkg-config  # Required for finding curl-config
-    
-    # Install CURL development files
-    check_and_install curl-config libcurl4-openssl-dev
+# Build the project
+make
 
-    # Install nlohmann-json
-    if [ ! -f "/usr/include/nlohmann/json.hpp" ]; then
-        echo "Installing nlohmann/json..."
-        apt install nlohmann-json3-dev -y
-    else
-        echo "nlohmann/json is already installed."
-    fi
-
-    # Create build directory
-    echo "Creating build directory..."
-    mkdir -p build
-    cd build
-
-    # Run CMake
-    echo "Running CMake..."
-    if ! cmake .. -DCMAKE_CXX_STANDARD=17; then
-        echo "CMake configuration failed. Exiting."
-        exit 1
-    fi
-
-    # Build the project
-    echo "Building the project..."
-    if ! make; then
-        echo "Build failed. Exiting."
-        exit 1
-    fi
-
-    # Move the executable to a common path
-    echo "Moving executable to /usr/local/bin..."
-    if [ -f "cyprus" ]; then
-        mv cyprus /usr/local/bin/
-        echo "Installation and build complete. You can now run 'cyprus' from anywhere."
-    else
-        echo "Executable 'cyprus' not found. Build may have failed."
-        exit 1
-    fi
-}
-
-# Call the main function
-install_cyprus
+# Move the executable to a common path
+if [ -f "cyprus" ]; then
+    mv cyprus /usr/local/bin/
+    echo "Installation complete. You can now run 'cyprus' from anywhere."
+else
+    echo "Build failed. Executable 'cyprus' not found."
+    exit 1
+fi

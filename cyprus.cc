@@ -10,6 +10,8 @@
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
+using json = nlohmann::json;
+
 // Function to print a banner (simplified version without pyfiglet and termcolor)
 void print_banner(const std::string& text) {
     std::cout << "======== " << text << " ========" << std::endl;
@@ -36,9 +38,9 @@ std::string chat(const std::string& prompt, const std::string& state) {
         std::string url = "https://api.openai.com/v1/chat/completions";
         std::string auth_header = "Authorization: Bearer " + std::string(api_key);
 
-        nlohmann::json payload = {
+        json payload = {
             {"model", "gpt-4-turbo-2024-04-09"},
-            {"messages", nlohmann::json::array({
+            {"messages", json::array({
                 {{"role", "system"}, {"content", "You are a Bash terminal assistant. When given a user input, respond ONLY with the raw Bash commands needed to accomplish the task. Do NOT include any explanations, comments, or markdown formatting like ```bash. If no Bash command is necessary, respond with 0xDEAD and nothing else."}},
                 {{"role", "user"}, {"content", "The current Bash session state is: " + state}},
                 {{"role", "user"}, {"content", prompt}}
@@ -67,8 +69,4 @@ std::string chat(const std::string& prompt, const std::string& state) {
         curl_easy_cleanup(curl);
     }
 
-    nlohmann::json response_json = nlohmann::json::parse(response);
-    return response_json["choices"][0]["message"]["content"];
-}
-
-// ... rest of the code remains the same ...
+    json response_json
