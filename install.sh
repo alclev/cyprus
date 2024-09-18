@@ -41,6 +41,7 @@ $VENV_PYTHON -m pip install --upgrade pip
 # Install requirements
 echo "Installing requirements..."
 $VENV_PIP install -r requirements.txt
+echo "Activating virtual environment..."
 
 # Add alias to .bashrc (or .zshrc if using zsh)
 SHELL_RC=""
@@ -52,7 +53,7 @@ fi
 
 if [ -n "$SHELL_RC" ]; then
     echo "Adding alias to $SHELL_RC..."
-    echo "alias cyprus='sudo OPENAI_API_KEY=$OPENAI_API_KEY $VENV_PYTHON ./run.py'" >> "$SHELL_RC"
+    echo "alias cyprus='sudo OPENAI_API_KEY=$OPENAI_API_KEY ./run.py'" >> "$SHELL_RC"
     echo "source $SHELL_RC" >> "$SHELL_RC"
 else
     echo "Warning: Could not find .bashrc or .zshrc to add alias."
