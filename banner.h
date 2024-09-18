@@ -1,91 +1,116 @@
-#include <string>
 #include <vector>
+#include <string>
+#include <random>
 #include <iostream>
-#include <map>
-#include <iomanip>  // for std::setw
-#include <sys/ioctl.h>
-#include <unistd.h>
 
-class FancyBanner {
+class Banner {
 private:
-    static const std::map<std::string, std::vector<std::string>> fonts;
-    static const std::map<std::string, std::string> colors;
-
-    static std::string colorize(const std::string& text, const std::string& color) {
-        return colors.at(color) + text + "\033[0m";
-    }
-
-    static int get_terminal_width() {
-        struct winsize w;
-        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-        return w.ws_col;
-    }
-
-    static std::string center_text(const std::string& text, int width) {
-        int len = text.length();
-        int pad = (width - len) / 2;
-        if (pad > 0) {
-            return std::string(pad, ' ') + text;
-        } else {
-            return text; // No padding if text is too long
-        }
+    std::vector<std::string> colors = {"\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m", "\033[36m"};
+    std::string reset_color = "\033[0m";
+    std::vector<std::string> art = {
+        R"DELIM(                   .
+                            / V\
+                        / `  /
+                        <<   |
+                        /    |
+                    /      |
+                    /        |
+                /    \  \ /
+                (      ) | |
+        ________|   _/_  | |
+        <__________\______)\__)
+        )DELIM",
+        R"DELIM(        _
+            / \      _-'
+            _/|  \-''- _ /
+        __-' { |          \
+            /             \
+            /       "o.  |o }
+            |            \ ;
+                        ',
+            \_         __\
+                ''-_    \.//
+                / '-____'
+                /
+                _'
+            _-'
+        )DELIM",
+        R"DELIM(                        ,     ,
+                                |\---/|
+                            /  , , |
+                        __.-'|  / \ /
+                __ ___.-'        ._O|
+            .-'  '        :      _/
+            / ,    .        .     |
+            :  ;    :        :   _/
+            |  |   .'     __:   /
+            |  :   /'----'| \  |
+            \  |\  |      | /| |
+            '.'| /       || \ |
+            | /|.'       '.l \\_
+            || ||             '-'
+            '-''-'
+        )DELIM",
+        R"DELIM(    _                  _
+            | '-.            .-' |
+            | -. '..\\,.//,.' .- |
+            |   \  \\\||///  /   |
+        /|    )M\/%%%%/\/(  . |\
+        (/\  MM\/%/\||/%\\/MM  /\)
+        (//M   \%\\\%%//%//   M\\)
+        (// M________ /\ ________M \\)
+        (// M\ \(',)|  |(',)/ /M \\) \\\\  
+        (\\ M\.  /,\\//,\  ./M //)
+            / MMmm( \\||// )mmMM \  \\
+            // MMM\\\||///MMM \\ \\
+            \//''\)/||\(/''\\/ \\
+            mrf\\( \oo/ )\\\/\
+                \'-..-'\/\\
+                    \\/ \\
+        )DELIM"
+        R"DELIM(                             __
+                                    .d$$b
+                                .' TO$;\
+                                /  : TP._;
+                                / _.;  :Tb|
+                            /   /   ;j$j
+                        _.-"       d$$$$
+                        .' ..       d$$$$;
+                        /  /P'      d$$$$P. |\
+                    /   "      .d$$$P' |\^"l
+                    .'           `T$P^"""""  :
+                ._.'      _.'                ;
+            `-.-".-'-' ._.       _.-"    .-"
+            `.-" _____  ._              .-"
+        -(.g$$$$$$$b.              .'
+            ""^^T$$$P^)            .(:
+            _/  -"  /.'         /:/;
+            ._.'-'`-'  ")/         /;/;
+        `-.-"..--""   " /         /  ;
+        .-" ..--""        -'          :
+        ..--""--.-"         (\      .-(\
+        ..--""              `-\(\/;`
+            _.                      :
+                                    ;`-
+                                :\
+                                ; 
+        )DELIM"
+    };
+    std::string applyColor(const std::string& text, const std::string& color) {
+        return color + text + reset_color;
     }
 
 public:
-    static void print_banner(const std::string& text, const std::string& font = "slant", const std::string& color = "cyan") {
-        std::vector<std::string> lines = fonts.at(font);
-        std::string result;
+    void displayRandomBanner() {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> artDist(0, art.size() - 1);
+        std::uniform_int_distribution<> colorDist(0, colors.size() - 1);
 
-        int terminal_width = get_terminal_width();
+        std::string randomArt = art[artDist(gen)];
+        std::string randomColor = colors[colorDist(gen)];
 
-        for (const auto& line : lines) {
-            std::string formatted_line;
-            for (char c : text) {
-                if (c >= 'A' && c <= 'Z') {
-                    // Ensure the line has enough characters to extract 6 characters
-                    size_t pos = (c - 'A') * 6;
-                    if (pos + 6 <= line.size()) {
-                        formatted_line += line.substr(pos, 6);
-                    } else {
-                        formatted_line += "      "; // Fallback for out-of-bounds
-                    }
-                } else if (c >= 'a' && c <= 'z') {
-                    // Handle lowercase letters similarly
-                    size_t pos = (c - 'a') * 6;
-                    if (pos + 6 <= line.size()) {
-                        formatted_line += line.substr(pos, 6);
-                    } else {
-                        formatted_line += "      "; // Fallback for out-of-bounds
-                    }
-                } else {
-                    formatted_line += "      "; // Fallback for non-alphabet characters
-                }
-            }
-            result += center_text(formatted_line, terminal_width) + "\n";
-        }
-
-        std::cout << colorize(result, color);
+        std::cout << applyColor(randomArt, randomColor) << std::endl;
     }
-};
-
-const std::map<std::string, std::vector<std::string>> FancyBanner::fonts = {
-    {"slant", {
-        "  ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____   ____  ",
-        " / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ / __ \\ ",
-        "| |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | ",
-        "| |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | |  | | ",
-        "| |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | |__| | ",
-        " \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ \\____/ "
-    }}
-};
-
-const std::map<std::string, std::string> FancyBanner::colors = {
-    {"black", "\033[30m"},
-    {"red", "\033[31m"},
-    {"green", "\033[32m"},
-    {"yellow", "\033[33m"},
-    {"blue", "\033[34m"},
-    {"magenta", "\033[35m"},
-    {"cyan", "\033[36m"},
-    {"white", "\033[37m"}
+    
 };

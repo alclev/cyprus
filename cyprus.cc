@@ -94,7 +94,8 @@ std::string execute_command(const std::string& command) {
 }
 
 int main() {
-    FancyBanner::print_banner("Cyprus", "slant", "cyan");
+    Banner banner;
+    banner.displayRandomBanner();
     std::cout << "Welcome to Cyprus! Type 'q' or 'quit' to exit." << std::endl;
 
     std::string user_input, state, commands;
