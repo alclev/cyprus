@@ -20,6 +20,12 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* out
     return total_size;
 }
 
+int stringToBinary(const std::string& str) {
+    if (str == "0") return 0;
+    if (str == "1") return 1;
+    throw std::invalid_argument("Input must be '0' or '1'");
+}
+
 std::string command_gen(const std::string& prompt, const std::string& state, int limit) {
     CURL* curl = curl_easy_init();
     std::string response;
@@ -127,7 +133,7 @@ bool check_termination(const std::string& prompt, const std::string& state, int 
     }
 
     json response_json = json::parse(response);
-    return atoi(response_json["choices"][0]["message"]["content"]);
+    return stringToBinary(response_json["choices"][0]["message"]["content"]);
 }
 
 // Function to execute a bash command and return the output
