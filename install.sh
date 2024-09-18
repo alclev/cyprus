@@ -6,6 +6,15 @@ else
     echo "python3-venv is already installed."
 fi
 
+# Check if python3-venv is installed
+if ! dpkg -s python3-venv >/dev/null 2>&1; then
+    echo "python3-venv is not installed. Installing now..."
+    sudo apt-get update
+    sudo apt-get install -y python3-venv
+else
+    echo "python3-venv is already installed."
+fi
+
 # Check if .venv directory exists
 if [ ! -d ".venv" ]; then
     echo "Creating virtual environment..."
