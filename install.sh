@@ -3,17 +3,6 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Function to install packages
-install_package() {
-    echo "Please install $1 manually. Unable to determine package manager."
-    echo "For example:"
-    echo "  On Debian/Ubuntu: sudo apt-get install $1"
-    echo "  On macOS with Homebrew: brew install $1"
-    echo "  On Fedora: sudo dnf install $1"
-    echo "  On Arch Linux: sudo pacman -S $1"
-    return 1
-}
-
 # Main installation function
 install_cyprus() {
     # Check and prompt for installation of dependencies
@@ -21,12 +10,12 @@ install_cyprus() {
 
     if ! command_exists cmake; then
         echo "CMake is required but not installed."
-        install_package cmake || return 1
+        apt install cmake -y
     fi
 
     if ! command_exists curl; then
         echo "curl is required but not installed."
-        install_package curl || return 1
+        apt install curl -y
     fi
 
     # nlohmann_json is a header-only library, so we'll download it directly
