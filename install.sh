@@ -1,55 +1,60 @@
-#!/bin/bash
-
-check_installed() {
-    if ! command -v "$1" &> /dev/null; then
-        echo "Error: $1 is not installed."
-        exit 1
-    fi
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
 }
 
-check_openai_key_alias() {
-    if [[ "$SHELL" == *"bash"* ]]; then
-        RC_FILE="$HOME/.bashrc"
-    elif [[ "$SHELL" == *"zsh"* ]]; then
-        RC_FILE="$HOME/.zshrc"
-    else
-        echo "Unsupported shell. Please use bash or zsh."
-        exit 1
-    fi
-
-    if ! grep -q "OPENAI_API_KEY" "$RC_FILE"; then
-        echo "Error: OpenAI API key alias not found in shell configuration."
-        exit 1
-    fi
+# Function to install packages
+install_package() {
+    echo "Please install $1 manually. Unable to determine package manager."
+    echo "For example:"
+    echo "  On Debian/Ubuntu: sudo apt-get install $1"
+    echo "  On macOS with Homebrew: brew install $1"
+    echo "  On Fedora: sudo dnf install $1"
+    echo "  On Arch Linux: sudo pacman -S $1"
+    return 1
 }
 
-create_cyprus_alias() {
-    if [[ "$SHELL" == *"bash"* ]]; then
-        RC_FILE="$HOME/.bashrc"
-    elif [[ "$SHELL" == *"zsh"* ]]; then
-        RC_FILE="$HOME/.zshrc"
-    else
-        echo "Unsupported shell. Please use bash or zsh."
-        exit 1
+# Main installation function
+install_cyprus() {
+    # Check and prompt for installation of dependencies
+    echo "Checking dependencies..."
+
+    if ! command_exists cmake; then
+        echo "CMake is required but not installed."
+        install_package cmake || return 1
     fi
 
-    echo "alias cyprus='sudo -E $1'" >> "$RC_FILE"
-    echo "Alias 'cyprus' created in $RC_FILE"
-    echo "Please restart your shell or run 'source $RC_FILE' to apply the changes."
+    if ! command_exists curl; then
+        echo "curl is required but not installed."
+        install_package curl || return 1
+    fi
+
+    # nlohmann_json is a header-only library, so we'll download it directly
+    if [ ! -f "/usr/local/include/nlohmann/json.hpp" ]; then
+        echo "Downloading nlohmann_json..."
+        sudo mkdir -p /usr/local/include/nlohmann
+        sudo curl -o /usr/local/include/nlohmann/json.hpp https://github.com/nlohmann/json/releases/download/v3.11.2/json.hpp
+    fi
+
+    # Create build directory
+    echo "Creating build directory..."
+    mkdir -p build
+    cd build
+
+    # Run CMake
+    echo "Running CMake..."
+    cmake ..
+
+    # Build the project
+    echo "Building the project..."
+    cmake --build .
+
+    # Move the executable to a common path
+    echo "Moving executable to /usr/local/bin..."
+    sudo mv cyprus /usr/local/bin/
+
+    echo "Installation and build complete. You can now run 'cyprus' from anywhere."
 }
 
-main() {
-    # Check if Python, venv, and pip are installed
-    for tool in python3 venv pip; do
-        check_installed "$tool"
-    done
-
-    # Check if OpenAI API key alias exists
-    check_openai_key_alias
-
-    # Create cyprus alias
-    read -p "Enter the full path to your Python file: " pyfile_path
-    create_cyprus_alias "$pyfile_path"
-}
-
-main
+# Call the main function
+install_cyprus
