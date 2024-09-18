@@ -1,9 +1,10 @@
-#pragma once
-
 #include <string>
 #include <vector>
 #include <iostream>
 #include <map>
+#include <iomanip>  // for std::setw
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 class FancyBanner {
 private:
@@ -14,22 +15,41 @@ private:
         return colors.at(color) + text + "\033[0m";
     }
 
+    static int get_terminal_width() {
+        struct winsize w;
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+        return w.ws_col;
+    }
+
+    static std::string center_text(const std::string& text, int width) {
+        int len = text.length();
+        int pad = (width - len) / 2;
+        if (pad > 0) {
+            return std::string(pad, ' ') + text;
+        } else {
+            return text; // No padding if text is too long
+        }
+    }
+
 public:
     static void print_banner(const std::string& text, const std::string& font = "slant", const std::string& color = "cyan") {
         std::vector<std::string> lines = fonts.at(font);
         std::string result;
 
+        int terminal_width = get_terminal_width();
+
         for (const auto& line : lines) {
+            std::string formatted_line;
             for (char c : text) {
                 if (c >= 'A' && c <= 'Z') {
-                    result += line.substr((c - 'A') * 6, 6);
+                    formatted_line += line.substr((c - 'A') * 6, 6);
                 } else if (c >= 'a' && c <= 'z') {
-                    result += line.substr((c - 'a') * 6, 6);
+                    formatted_line += line.substr((c - 'a') * 6, 6);
                 } else {
-                    result += "      ";
+                    formatted_line += "      ";
                 }
             }
-            result += "\n";
+            result += center_text(formatted_line, terminal_width) + "\n";
         }
 
         std::cout << colorize(result, color);
@@ -38,14 +58,13 @@ public:
 
 const std::map<std::string, std::vector<std::string>> FancyBanner::fonts = {
     {"slant", {
-        "  _____ _     __  __ _   _  ____ _____ ____  ____ ___ _____ _   _ _   ___        ______ _____ _   _ _______ ____  _____ _   _ _    _ _____  _  ______   ______ _____   ______ _   _ _____      _ _   _ _____  _      __  __ _   _  ___  ____   ____  ____  ____  _____ _   _ _   ___        _______   ______",
-        " / ____| |   |  \\/  | \\ | |/ __ \\_   _/ __ \\|  _ \\_ _|_   _| | | | | | \\ \\      / / ___|_   _| | | |__   __/ __ \\|  __ \\ | | | |  | |  __ \\| |/ / __ \\ / _____|  __ \\ / _____|  | |/ ____|    | | \\ | |  __ \\| |    |  \\/  | \\ | |/ _ \\|  _ \\ / __ \\|  _ \\/ __ \\|_   _| | | | | | \\ \\      / /_   _\\ \\ / /_   _|",
-        "| |  __| |   | \\  / |  \\| | |  | || || |  | | |_) | |  | | | |_| | | | |\\ \\ /\\ / /\\___ \\ | | | | | |  | | | |  | | |__) | | | | |  | | |__) | ' / |  | | (___  | |__) | |     |  | | (___      | |  \\| | |  | | |    | \\  / |  \\| | | | | |_) | |  | | |_) | |  | || | | |_| | | | |\\ \\ /\\ / /  | |  \\ V /  | |  ",
-        "| | |_ | |   | |\\/| | . ` | |  | || || |  | |  __/| |  | | |  _  | | | | \\ V  V /  ___) || | | | | |  | | | |  | |  _  /| | | | |  | |  ___/|  <| |  | |\\___  \\|  _  /| |     |  | |\\___ \\     | | . ` | |  | | |    | |\\/| | . ` | | | |  _ <| |  | |  _ <| |  | || | |  _  | | | | \\ V  V /   | |   > <   | |  ",
-        "| |__| | |___| |  | | |\\  | |__| || || |__| | |  _| | _| |_| | | | |_| |  \\ /\\ /  ____) || |_| |_| |  | | | |__| | | \\ \\ |_| | |__| | |    | . \\ |__| |___) | | \\ \\| |____ |__| |____) |    | | |\\  | |__| | |____| |  | | |\\  | |_| | |_) | |__| | |_) | |__| || |_| | | | |_| |  \\ /\\ /   _| |_ / . \\ _| |_ ",
-        " \\_____|_____|_|  |_|_| \\_|\\____/|_| \\____/|_| |___|_____|_| |_|\\___/    V  V  |_____/ \\___\\___/   |_|  \\____/|_|  \\_\\___/ \\____/|_|    |_|\\_\\____/|____/  |_|  \\_\\_____|\\____/|_____/     |_|_| \\_|_____/|______|_|  |_|_| \\_|\\___/|____/ \\____/|____/ \\____/  \\__|_| |_|\\___/    V  V   |_____\\_/ \\_|_____|"
+        "  _____  _                    _            ",
+        " / ____|| |                  | |           ",
+        "| |     | |  _   _   _ __ ___ | |  ___  ___ ",
+        "| |     | | | | | | | '_ ` _ \\| | / _ \\/ __|",
+        "| |____ | | | |_| | | | | | | | ||  __/\\__ \\",
+        " \\_____||_|  \\__,_| |_| |_| |_|_| \\___||___/"
     }}
-    // Add more fonts here if needed
 };
 
 const std::map<std::string, std::string> FancyBanner::colors = {
@@ -58,4 +77,3 @@ const std::map<std::string, std::string> FancyBanner::colors = {
     {"cyan", "\033[36m"},
     {"white", "\033[37m"}
 };
-
