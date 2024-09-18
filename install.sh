@@ -1,3 +1,11 @@
+#!/usr/bin/env bash
+
+# Check if the script is being run as root
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root."
+    exit
+fi
+
 # Function to check if a command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
