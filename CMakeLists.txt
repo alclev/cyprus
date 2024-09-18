@@ -17,7 +17,7 @@ find_package(nlohmann_json 3.2.0 REQUIRED)
 add_executable(cyprus cyprus.cc)
 
 # Link necessary libraries to the executable
-target_link_libraries(cyprus PRIVATE CURL::libcurl nlohmann_json::nlohmann_json)
+target_link_libraries(cyprus PRIVATE nlohmann_json::nlohmann_json)
 
 # Include necessary directories
 target_include_directories(cyprus PRIVATE ${CURL_INCLUDE_DIRS})
@@ -27,5 +27,4 @@ target_compile_options(cyprus PRIVATE
     -Wall         # Enable most warning messages
     -Wextra       # Enable extra warning messages
     -Wpedantic    # Enforce strict standard compliance
-    -Werror       # Treat warnings as errors
 )
