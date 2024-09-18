@@ -21,6 +21,7 @@ fi
 # Create build directory if it doesn't exist
 rm -rf build
 mkdir build
+cd build
 
 # Run CMake and check if it succeeds
 if ! cmake ..; then
