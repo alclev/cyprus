@@ -41,7 +41,12 @@ install_cyprus() {
     check_and_install curl-config libcurl4-openssl-dev
 
     # Install nlohmann-json
-    apt install nlohmann-json3-dev -y
+    if [ ! -f "/usr/include/nlohmann/json.hpp" ]; then
+        echo "Installing nlohmann/json..."
+        apt install nlohmann-json3-dev -y
+    else
+        echo "nlohmann/json is already installed."
+    fi
 
     # Create build directory
     echo "Creating build directory..."
