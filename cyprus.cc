@@ -20,7 +20,7 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* out
     return total_size;
 }
 
-std::string command_gen(const std::string& prompt, const std::string& state, int limit){
+std::string command_gen(const std::string& prompt, const std::string& state, int limit) {
     CURL* curl = curl_easy_init();
     std::string response;
 
@@ -40,7 +40,7 @@ std::string command_gen(const std::string& prompt, const std::string& state, int
                                                 "respond ONLY with the raw Bash commands needed to accomplish the original PROMPT. "
                                                 "Do NOT include any explanations, comments, or markdown formatting like ```bash. "
                                                 "Consider the task complete if you've addressed all aspects of the original prompt or after "}},
-                {{"role", "system"}, {"content", "You are reacting DIRECTLY to the bash STATE to address the original PROMPT. "
+                {{"role", "system"}, {"content", "You are reacting DIRECTLY to the bash STATE to address the original PROMPT. " + 
                                                 std::to_string(limit) + "iterations. You must be adaptive and creative to trouble-shoot and problem-solve "
                                                 "the original PROMPT. Continue providing executable bash commands until you feel that the original PROMPT "
                                                 "has been completed. BE INTERACTIVE and seek additional information with more commands, if needed."}},
