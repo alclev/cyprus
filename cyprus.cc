@@ -11,6 +11,8 @@
 #include <nlohmann/json.hpp>
 #include <vector>
 #include <sstream>
+#include <unistd.h>
+
 #include "banner.h"
 
 using json = nlohmann::json;
