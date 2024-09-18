@@ -39,7 +39,7 @@ std::string chat(const std::string& prompt, const std::string& state) {
         std::string auth_header = "Authorization: Bearer " + std::string(api_key);
 
         json payload = {
-            {"model", "gpt-4-turbo-2024-04-09"},
+            {"model", "gpt-4-turbo"},
             {"messages", json::array({
                 {{"role", "system"}, {"content", "You are a Bash terminal assistant. When given a user input, respond ONLY with the raw Bash commands needed to accomplish the task. Do NOT include any explanations, comments, or markdown formatting like ```bash. If no Bash command is necessary, respond with 0xDEAD and nothing else."}},
                 {{"role", "user"}, {"content", "The current Bash session state is: " + state}},
@@ -69,4 +69,61 @@ std::string chat(const std::string& prompt, const std::string& state) {
         curl_easy_cleanup(curl);
     }
 
-    json response_json
+    json response_json = json::parse(response);
+    return response_json["choices"][0]["message"]["content"];
+}
+
+// Function to execute a bash command and return the output
+std::string execute_command(const std::string& command) {
+    std::array<char, 128> buffer;
+    std::string result;
+
+    // Open a pipe to execute the command
+    std::shared_ptr<FILE> pipe(popen(command.c_str(), "r"), pclose);
+    if (!pipe) throw std::runtime_error("popen() failed!");
+
+    // Read the command output into the result string
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+
+    return result;
+}
+
+int main() {
+    print_banner("Cyprus");
+    std::cout << "Welcome to Cyprus! Type 'q' or 'quit' to exit." << std::endl;
+
+    std::string user_input, state, commands;
+
+    while (true) {
+        std::cout << "\ncyprus> ";
+        std::getline(std::cin, user_input);
+
+        std::transform(user_input.begin(), user_input.end(), user_input.begin(),
+            [](unsigned char c){ return std::tolower(c); });
+
+        if (user_input == "q" || user_input == "quit") {
+            std::cout << "Bye." << std::endl;
+            break;
+        }
+
+        state = "";
+        commands = "";
+
+        try {
+            commands = chat(user_input, state);
+            if (commands != "0xDEAD") {
+                std::cout << "Executing command: " << commands << std::endl;
+                state = execute_command(commands);
+                std::cout << "Command output: \n" << state;
+            } else {
+                std::cout << "Nothing more to be done." << std::endl;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "An error occurred: " << e.what() << std::endl;
+        }
+    }
+
+    return 0;
+}
