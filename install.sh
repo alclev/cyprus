@@ -54,10 +54,8 @@ fi
 if [ -n "$SHELL_RC" ]; then
     echo "Adding alias to $SHELL_RC..."
     echo "alias cyprus='sudo -E ./run.py'" >> "$SHELL_RC"
-    echo "source $SHELL_RC" >> "$SHELL_RC"
 else
     echo "Warning: Could not find .bashrc or .zshrc to add alias."
 fi
-
+source $SHELL_RC
 echo "Cyprus installed successfully. Run 'cyprus' to start the program."
-echo "Note: You may need to restart your terminal or run 'source $SHELL_RC' for the alias to take effect."
