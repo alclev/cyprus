@@ -67,7 +67,7 @@ private:
             mrf\\( \oo/ )\\\/\
                 \'-..-'\/\\
                     \\/ \\
-        )DELIM"
+        )DELIM",
         R"DELIM(                             __
                                     .d$$b
                                 .' TO$;\
