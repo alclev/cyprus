@@ -12,12 +12,15 @@
 #include <vector>
 #include <sstream>
 #include <unistd.h>
-#include <unordered_set>
 #include <csignal>
+#include <utility>
+#include <cassert>
 
-volatile sig_atmic_t interrupted = 0;
+
+volatile sig_atomic_t interrupted = 0;
 
 void handle_interrupt(int sig) {
+    assert(sig == SIGINT);
     interrupted = 1;
 }
 
@@ -32,57 +35,52 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* out
     return total_size;
 }
 
-int stringToBinary(const std::string& str) {
-    if (str == "0") return 0;
-    if (str == "1") return 1;
-    throw std::invalid_argument("Input must be '0' or '1'");
-}
-
-std::string format_set(const std::vector<std::string>& vec) {
+std::string format_vec(std::vector<std::string> &vec) {
     std::stringstream ss;
-    ss << "{";
+    ss << "[";
     for (size_t i = 0; i < vec.size(); i++) {
-        ss << vec[i];
+        ss << "\"" << vec[i] << "\"";
         if (i != vec.size() - 1) {
             ss << ", ";
         }
     }
-    ss << "}";
+    ss << "]";
     return ss.str();
 }
 
-std::string chat(std::string env_info, const std::string& prompt, const std::string& state, std::unordered_set<std::string> history) {
+std::string chat(std::pair<std::string,std::string> env, const std::string& prompt, const std::string& state, std::vector<std::string> history) {
     CURL* curl = curl_easy_init();
     std::string response;
 
     if (curl) {
         std::string url = "https://api.openai.com/v1/chat/completions";
-        std::string auth_header = "Authorization: Bearer " + std::string(api_key);
+        std::string auth_header = "Authorization: Bearer " + std::string(env.second);
        
         json payload = {
             {"model", "gpt-4-turbo"},
-            {"temperature", 0.3},  
-            {"max_tokens", 100},   
-            {"top_p", 1.0},    
+            {"temperature", 0.3},
+            {"max_tokens", 100},
+            {"top_p", 1.0},
             {"messages", json::array({
-                {
-                    {"role", "system"}, 
+                json::object({
+                    {"role", "system"},
                     {"content", 
-                        "You are interfacing directly with a shell terminal. "
-                        "Your goal is to generate commands based on the following environmental information: " + env_info + 
-                        "You are to provide only executable commands—NO ADDITIONAL CONTEXT OR COMMENTARY. "
-                        "React directly to the current state of the terminal."
+                        std::string("You are interfacing directly with a shell terminal. ") +
+                        "Your goal is to generate commands based on the following environmental information: " + env.first +
+                        "You are to provide only executable commands—NO ADDITIONAL CONTEXT OR COMMENTARY. " +
+                        "React directly to the current state of the terminal." +
+                        "Be sure to terminate if HISTORY dictates that you have statisfied the prompt." +
                         "Return ONLY 0xDEAD if you deem the process and complete. Although be thorough."
                     }
-                },
-                {
-                    {"role", "user"}, 
+                }),
+                json::object({
+                    {"role", "user"},
                     {"content", 
-                        "Current state: " + state + 
-                        ". Past commands: " + format_set(history) + 
+                        std::string("Current state: ") + state +
+                        ". HISTORY: " + format_vec(history) +
                         ". Original prompt: " + prompt
                     }
-                }
+                })
             })}
         };
 
@@ -129,7 +127,7 @@ std::string execute_command(const std::string& command) {
     return result;
 }
 
-std::string process_env(){
+std::pair<std::string, std::string> process_env(){
     const char *home = std::getenv("HOME");
     const char *path = std::getenv("PATH");
     const char *user = std::getenv("USER");
@@ -150,8 +148,8 @@ std::string process_env(){
         std::cerr << "OPENAI_API_KEY environment variable not set" << std::endl;
         exit(EXIT_FAILURE);
     }
-
-    return ss.str();
+    std::string api_key_str(api_key);
+    return std::make_pair(ss.str(), api_key_str);
 }
 
 int main() {
@@ -174,7 +172,7 @@ int main() {
     while (true) {
         std::cout << "\ncyprus> ";
         std::getline(std::cin, user_input);
-        std::string env_info = process_env();
+        std::pair<std::string, std::string> env_info = process_env();
 
         std::transform(user_input.begin(), user_input.end(), user_input.begin(),
             [](unsigned char c){ return std::tolower(c); });
@@ -186,7 +184,6 @@ int main() {
 
         state = "";
         commands = "";
-        int iteration_count = 0;
         interrupted = 0;
         std::vector<std::string> history;
         while (true){
@@ -200,6 +197,7 @@ int main() {
                     std::cout << "Exiting..." << std::endl;
                     break;
                 }
+                std::cout << "\n" << commands << std::endl;
                 history.push_back(commands);
                 state = execute_command(commands);               
                 std::cout << "\n" << state;

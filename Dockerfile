@@ -7,8 +7,4 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y cmake g++ libcurl4-openssl
 
 COPY . .
 
-COPY build.sh build.sh
-RUN chmod +x build.sh
-RUN ./build.sh
-
 WORKDIR "/root"
