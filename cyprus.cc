@@ -66,10 +66,10 @@ std::string chat(std::pair<std::string,std::string> env, const std::string &stat
                     {"content", 
                         std::string("You are interfacing directly with a shell terminal. ") +
                             "Your goal is to generate commands based on the following environmental information: " + env.first +
-                            "You are to provide only executable commands—NO ADDITIONAL CONTEXT OR COMMENTARY. " +
-                            "React directly to the current state of the terminal." +
+                            "Do not add things like ```bash or $ before commands. Return either 1. A series a bash commands OR 2. 0xDEAD" +
+                            "React directly to the current STATE of the terminal." +
                             "Be sure to terminate if HISTORY dictates that you have satisfied the prompt." +
-                            "Return '0xDEAD' WITHOUT ```bash (or echo or any additional commentary at all) if you deem the process complete." + 
+                            "Return '0xDEAD' if you deem the process complete." + 
                             "If a command fails, try to understand why and suggest an alternative approach. " +
                             "For example, if a command is not found, try to install it or use an alternative command. " +
                             "Do not repeat the same failing command multiple times."
