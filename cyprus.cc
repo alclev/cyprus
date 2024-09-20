@@ -16,6 +16,8 @@
 #include <utility>
 #include <cassert>
 
+#define MAX_ITER 10
+
 
 volatile sig_atomic_t interrupted = 0;
 
@@ -48,29 +50,29 @@ std::string format_vec(std::vector<std::string> &vec) {
     return ss.str();
 }
 
-std::string chat(std::pair<std::string,std::string> env, const std::string& prompt, const std::string& state, std::vector<std::string> history) {
+std::string chat(std::pair<std::string,std::string> env, const std::string &state, const std::string &prompt, std::vector<std::string> history) {
     CURL* curl = curl_easy_init();
     std::string response;
-
     if (curl) {
         std::string url = "https://api.openai.com/v1/chat/completions";
         std::string auth_header = "Authorization: Bearer " + std::string(env.second);
        
         json payload = {
-            {"model", "gpt-4-turbo"},
+            {"model", "gpt-4o"},
             {"temperature", 0.3},
-            {"max_tokens", 100},
-            {"top_p", 1.0},
             {"messages", json::array({
                 json::object({
                     {"role", "system"},
                     {"content", 
                         std::string("You are interfacing directly with a shell terminal. ") +
-                        "Your goal is to generate commands based on the following environmental information: " + env.first +
-                        "You are to provide only executable commands—NO ADDITIONAL CONTEXT OR COMMENTARY. " +
-                        "React directly to the current state of the terminal." +
-                        "Be sure to terminate if HISTORY dictates that you have statisfied the prompt." +
-                        "Return ONLY 0xDEAD if you deem the process and complete. Although be thorough."
+                            "Your goal is to generate commands based on the following environmental information: " + env.first +
+                            "You are to provide only executable commands—NO ADDITIONAL CONTEXT OR COMMENTARY. " +
+                            "React directly to the current state of the terminal." +
+                            "Be sure to terminate if HISTORY dictates that you have satisfied the prompt." +
+                            "Return '0xDEAD' WITHOUT ```bash (or echo or any additional commentary at all) if you deem the process complete." + 
+                            "If a command fails, try to understand why and suggest an alternative approach. " +
+                            "For example, if a command is not found, try to install it or use an alternative command. " +
+                            "Do not repeat the same failing command multiple times."
                     }
                 }),
                 json::object({
@@ -110,20 +112,22 @@ std::string chat(std::pair<std::string,std::string> env, const std::string& prom
     return response_json["choices"][0]["message"]["content"];
 }
 
-// Function to execute a bash command and return the output
 std::string execute_command(const std::string& command) {
     std::array<char, 128> buffer;
     std::string result;
 
-    // Open a pipe to execute the command
-    std::shared_ptr<FILE> pipe(popen(command.c_str(), "r"), pclose);
+    std::string modified_command = command + " 2>&1";
+
+    std::shared_ptr<FILE> pipe(popen(modified_command.c_str(), "r"), pclose);
     if (!pipe) throw std::runtime_error("popen() failed!");
 
-    // Read the command output into the result string
     while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
         result += buffer.data();
     }
 
+    while (!result.empty() && (result.back() == '\n' || result.back() == '\r')) {
+        result.pop_back();
+    }
     return result;
 }
 
@@ -168,7 +172,7 @@ int main() {
     }
 
     std::string user_input, state, commands;
-
+    int iterations;
     while (true) {
         std::cout << "\ncyprus> ";
         std::getline(std::cin, user_input);
@@ -186,7 +190,8 @@ int main() {
         commands = "";
         interrupted = 0;
         std::vector<std::string> history;
-        while (true){
+        iterations = 0;
+        while (iterations < MAX_ITER){
             if(interrupted){
                 std::cout << "Interrupted..." << std::endl;
                 break;
@@ -199,11 +204,12 @@ int main() {
                 }
                 std::cout << "\n" << commands << std::endl;
                 history.push_back(commands);
-                state = execute_command(commands);               
-                std::cout << "\n" << state;
+                state = execute_command(commands);
+                std::cout << state << std::endl;          
             }catch (const std::exception& e) {
                 std::cerr << "An error occurred: " << e.what() << std::endl;
             }
+            iterations++;
         }
     }
     return 0;

@@ -1,4 +1,5 @@
 build/
 .env
 .vscode/
+.bash_history
 launch.sh
