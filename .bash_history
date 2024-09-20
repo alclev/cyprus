@@ -8,3 +8,7 @@ sh build.sh
 ./build/cyprus 
 q
 exit
+ls
+sh build.sh 
+./build/cyprus 
+exit
