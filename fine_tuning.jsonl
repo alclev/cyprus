@@ -1,0 +1,7 @@
+{"prompt": "Current state: . HISTORY: []. Original prompt: test", "completion": "echo 'Please provide further clarification'"}
+{"prompt": "Current state: . HISTORY: []. Original prompt: do a ping scan", "completion": "ping -c 4 192.168.1.1"}
+{"prompt": "Current state: sh: 1: ping: not found. HISTORY: [\"ping -c 4 192.168.1.1\"]. Original prompt: do a ping scan", "completion": "apt update && apt install -y iputils-ping"}
+
+
+
+

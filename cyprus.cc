@@ -50,15 +50,27 @@ std::string format_vec(std::vector<std::string> &vec) {
     return ss.str();
 }
 
+std::string strip(const std::string& str) {
+    size_t start = str.find_first_not_of(" \t\n\r\f\v"); // Find the first non-whitespace character
+    size_t end = str.find_last_not_of(" \t\n\r\f\v");   // Find the last non-whitespace character
+
+    if (start == std::string::npos) {
+        return ""; 
+    }
+    
+    return str.substr(start, end - start + 1); 
+}
+
 std::string chat(std::pair<std::string,std::string> env, const std::string &state, const std::string &prompt, std::vector<std::string> history) {
     CURL* curl = curl_easy_init();
     std::string response;
     if (curl) {
         std::string url = "https://api.openai.com/v1/chat/completions";
         std::string auth_header = "Authorization: Bearer " + std::string(env.second);
-       
+        std::string usr = std::string("Current state: ") + state + ". HISTORY: " + format_vec(history) + ". Original prompt: " + prompt;
+        std::cout << "STATE========> " << usr << std::endl;
         json payload = {
-            {"model", "gpt-4o"},
+            {"model", "chatgpt-4o-latest"},
             {"temperature", 0.3},
             {"messages", json::array({
                 json::object({
@@ -66,10 +78,9 @@ std::string chat(std::pair<std::string,std::string> env, const std::string &stat
                     {"content", 
                         std::string("You are interfacing directly with a shell terminal. ") +
                             "Your goal is to generate commands based on the following environmental information: " + env.first +
-                            "Do not add things like ```bash or $ before commands. Return either 1. A series a bash commands OR 2. 0xDEAD" +
-                            "React directly to the current STATE of the terminal." +
+                            "Do not add things like ```bash or $ before commands. Return ONE OF TWO THINGS: 1. A series a bash commands OR 2. 0xDEAD" +
                             "Be sure to terminate if HISTORY dictates that you have satisfied the prompt." +
-                            "Return '0xDEAD' if you deem the process complete." + 
+                            "Return 0xDEAD if you deem the process complete. Remember to react directly to the current STATE of the terminal." + 
                             "If a command fails, try to understand why and suggest an alternative approach. " +
                             "For example, if a command is not found, try to install it or use an alternative command. " +
                             "Do not repeat the same failing command multiple times."
@@ -198,18 +209,21 @@ int main() {
             }
             try {
                 commands = chat(env_info, state, user_input, history);
-                if(commands == "0xDEAD"){
+                // commands = strip(commands);
+                // check is 'a' is in the string
+                if(commands.find("0xDEAD") != std::string::npos){
                     std::cout << "Exiting..." << std::endl;
                     break;
                 }
                 std::cout << "\n" << commands << std::endl;
                 history.push_back(commands);
                 state = execute_command(commands);
-                std::cout << state << std::endl;          
+                std::cout << state << std::endl;
+
+                iterations++;          
             }catch (const std::exception& e) {
                 std::cerr << "An error occurred: " << e.what() << std::endl;
             }
-            iterations++;
         }
     }
     return 0;

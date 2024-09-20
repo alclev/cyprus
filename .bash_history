@@ -22,3 +22,21 @@ cd
 ls
 cyprus
 exit
+sh build.sh
+sh build.sh
+make a few files
+cyprus
+sh build.sh
+cyprus
+sh build.sh
+cyprus
+sh build.sh
+cyprus
+sh build.sh
+cyprus
+sh build.sh
+cyprus
+sh build.sh
+cyprus
+q
+exit
