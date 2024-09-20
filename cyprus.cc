@@ -67,23 +67,15 @@ std::string chat(std::pair<std::string,std::string> env, const std::string &stat
     if (curl) {
         std::string url = "https://api.openai.com/v1/chat/completions";
         std::string auth_header = "Authorization: Bearer " + std::string(env.second);
-        std::string usr = std::string("Current state: ") + state + ". HISTORY: " + format_vec(history) + ". Original prompt: " + prompt;
-        std::cout << "STATE========> " << usr << std::endl;
+        // std::string usr = std::string("Current state: ") + state + ". HISTORY: " + format_vec(history) + ". Original prompt: " + prompt;
+        // std::cout << "STATE========> " << usr << std::endl;
         json payload = {
-            {"model", "chatgpt-4o-latest"},
+            {"model", "ft:gpt-4o-2024-08-06:personal::A9fCo7mh"},  
             {"temperature", 0.3},
             {"messages", json::array({
                 json::object({
                     {"role", "system"},
-                    {"content", 
-                        std::string("You are interfacing directly with a shell terminal. ") +
-                            "Your goal is to generate commands based on the following environmental information: " + env.first +
-                            "Do not add things like ```bash or $ before commands. Return ONE OF TWO THINGS: 1. A series a bash commands OR 2. 0xDEAD" +
-                            "Be sure to terminate if HISTORY dictates that you have satisfied the prompt." +
-                            "Return 0xDEAD if you deem the process complete. Remember to react directly to the current STATE of the terminal." + 
-                            "If a command fails, try to understand why and suggest an alternative approach. " +
-                            "For example, if a command is not found, try to install it or use an alternative command. " +
-                            "Do not repeat the same failing command multiple times."
+                    {"content", "You are Cyprus, designed to interact with the OS directly through command-line tasks. Generate only the necessary commands to solve the user's request, adjusting based on the current system state. Terminate by returning '0xDEAD' if the job is done or if no further action is needed."
                     }
                 }),
                 json::object({
@@ -211,12 +203,12 @@ int main() {
                 commands = chat(env_info, state, user_input, history);
                 // commands = strip(commands);
                 // check is 'a' is in the string
-                std::cout << "\nRESPONSE: " << commands << std::endl;
                 if(commands.find("0xDEAD") != std::string::npos){
                     std::cout << "Exiting..." << std::endl;
                     break;
                 }
                 
+                std::cout << "\n" << commands << std::endl;
                 history.push_back(commands);
                 state = execute_command(commands);
                 std::cout << state << std::endl;

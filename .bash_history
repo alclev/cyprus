@@ -48,3 +48,12 @@ cyprus
 sh build.sh
 cyprus
 exit
+./build/cyprus 
+exit
+sh build.sh
+cyprus 
+sh build.sh
+cyprus 
+sh build.sh
+cyprus 
+exit

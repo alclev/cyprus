@@ -2,3 +2,8 @@ build/
 .env
 .vscode/
 .bash_history
+fine_tuning.json;
+train.py 
+.config
+.venv
+.DS_Store
