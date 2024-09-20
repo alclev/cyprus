@@ -1,1 +1,1 @@
-docker run --privileged --rm -v  $(PWD):/root --env-file .env --name cyprus -it cyprus
+docker run --privileged --rm -v  $(PWD):/root --env-file .env --name cyprus -it cyprus:latest

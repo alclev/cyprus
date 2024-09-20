@@ -12,3 +12,13 @@ ls
 sh build.sh 
 ./build/cyprus 
 exit
+sh build.sh
+./build/cyprus 
+echo $PATH
+exit
+ls
+sh build.sh
+cd
+ls
+cyprus
+exit
