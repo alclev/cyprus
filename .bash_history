@@ -40,3 +40,11 @@ sh build.sh
 cyprus
 q
 exit
+sh build.sh
+cyprus
+sh build.sh
+sh build.sh
+cyprus
+sh build.sh
+cyprus
+exit

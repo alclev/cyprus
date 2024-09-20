@@ -1,6 +1,107 @@
 {"prompt": "Current state: . HISTORY: []. Original prompt: test", "completion": "echo 'Please provide further clarification'"}
 {"prompt": "Current state: . HISTORY: []. Original prompt: do a ping scan", "completion": "ping -c 4 192.168.1.1"}
 {"prompt": "Current state: sh: 1: ping: not found. HISTORY: [\"ping -c 4 192.168.1.1\"]. Original prompt: do a ping scan", "completion": "apt update && apt install -y iputils-ping"}
+{"prompt": "Current state: . HISTORY: []. Original prompt: do a ping sweep", "completion": "for i in {1..254}; do ping -c 1 192.168.1.$i | grep \"64 bytes\" & done"}
+{"prompt": "Current state: ping: 192.168.1.{1..254}: Name or service not known. HISTORY: [\"for i in {1..254}; do ping -c 1 192.168.1.$i | grep \"64 bytes\" & done\"]. Original prompt: do a ping sweep", "completion": "echo 'The error occurs because `ping` does not support brace expansion in the IP address. Instead, the loop should be handled directly in bash.'; for i in {1..254}; do ping -c 1 192.168.1.$i | grep \"64 bytes\" & done; wait"}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+{"prompt": "", "completion": ""}
+
+
+
+
 
 
 

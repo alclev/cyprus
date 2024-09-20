@@ -211,11 +211,12 @@ int main() {
                 commands = chat(env_info, state, user_input, history);
                 // commands = strip(commands);
                 // check is 'a' is in the string
+                std::cout << "\nRESPONSE: " << commands << std::endl;
                 if(commands.find("0xDEAD") != std::string::npos){
                     std::cout << "Exiting..." << std::endl;
                     break;
                 }
-                std::cout << "\n" << commands << std::endl;
+                
                 history.push_back(commands);
                 state = execute_command(commands);
                 std::cout << state << std::endl;
