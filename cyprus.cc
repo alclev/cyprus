@@ -75,7 +75,7 @@ std::string chat(std::pair<std::string,std::string> env, const std::string &stat
             {"messages", json::array({
                 json::object({
                     {"role", "system"},
-                    {"content", "You are Cyprus, designed to interact with the OS directly through command-line tasks. Generate only the necessary commands to solve the user's request, adjusting based on the current system state. Terminate by returning '0xDEAD' if the job is done or if no further action is needed."
+                    {"content", "You are Cyprus, designed to interact with the OS directly through command-line tasks. Generate only the necessary commands to solve the user's request, adjusting based on the current system state. Terminate by returning '0xDEAD' if the job is done or if no further action is needed. Make sure not to use tools like vim and nano that require user input because this is meant to be an automation tool."
                     }
                 }),
                 json::object({
@@ -191,14 +191,9 @@ int main() {
 
         state = "";
         commands = "";
-        interrupted = 0;
         std::vector<std::string> history;
         iterations = 0;
         while (iterations < MAX_ITER){
-            if(interrupted){
-                std::cout << "Interrupted..." << std::endl;
-                break;
-            }
             try {
                 commands = chat(env_info, state, user_input, history);
                 // commands = strip(commands);
@@ -207,7 +202,7 @@ int main() {
                     std::cout << "Exiting..." << std::endl;
                     break;
                 }
-                
+
                 std::cout << "\n" << commands << std::endl;
                 history.push_back(commands);
                 state = execute_command(commands);
